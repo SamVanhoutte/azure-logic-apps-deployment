@@ -1,0 +1,92 @@
+name: Deploy the Backend environment
+
+on:
+  workflow_call:
+    inputs: 
+      environment:
+        required: true
+        type: string
+      environmentAcronym:
+        required: true
+        type: string
+      environmentName:
+        required: true
+        type: string
+      regionAcronym:
+        required: true
+        type: string
+      region:
+        required: true
+        type: string
+      versionNumber:
+        required: true
+        type: string
+jobs:
+  Deploy-Azure-Backend-Resources:
+    runs-on: ubuntu-latest
+    if: always()
+    environment: ${{ inputs.environment }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        enable-AzPSSession: true
+    - name: Download bicep files from pipeline artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: bicep
+        path: ./artifacts/bicep
+    - name: Download github actions from pipeline artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: github-actions
+        path: ./artifacts/github-actions
+    - name: Download api files from pipeline artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: api
+        path: ./artifacts/api
+    - name: Disable bicep version_check
+      shell: pwsh
+      run: |
+        az config set bicep.version_check=False
+    - name: Deploy Azure backend resources with bicep
+      uses: azure/arm-deploy@v1
+      id: deployResources
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        scope: subscription
+        region: ${{ inputs.region }}
+        template: './artifacts/bicep/backend.bicep'
+        parameters: ./artifacts/bicep/conf/${{ inputs.environmentAcronym }}.backend.json environmentAcronym=${{ inputs.environmentAcronym }} locationAcronym=${{ inputs.regionAcronym }} versionNumber=${{ inputs.versionNumber }} 
+        failOnStdErr: true
+        
+  Deploy-Integrations:
+    runs-on: ubuntu-latest
+    if: always()
+    needs : [ Deploy-Azure-Backend-Resources ]
+    environment: ${{ inputs.environment }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        enable-AzPSSession: true
+    - name: Download powershell files from pipeline artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: powershell
+        path: ./artifacts/powershell
+    - name: Download integration files
+      uses: actions/download-artifact@v3
+      with:
+        name: integrations
+        path: ./artifacts/integrations
+    - name: Deploy integrations
+      uses: azure/powershell@v1
+      with:
+        inlineScript: ./artifacts/powershell/deploy-logicapp-folder.ps1 -environmentAcronym ${{ inputs.environmentAcronym }} -location ${{ inputs.region }} -rootFolder './artifacts/integrations/'
+        azPSVersion: "latest"
+
+

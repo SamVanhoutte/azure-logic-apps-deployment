@@ -1,0 +1,9 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_weu_dev_int_la_metering_bel_fluvius_name": {
+            "value": "weu-dev-int-la-metering-bel-fluvius"
+        }
+    }
+}

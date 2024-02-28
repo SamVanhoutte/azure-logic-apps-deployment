@@ -1,0 +1,43 @@
+name: Backend pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'documentation/**'      
+      - 'docs/**'      
+
+permissions: write-all
+
+jobs:
+  Checkout-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # OR "2" -> To retrieve the preceding commit.
+
+  Build-environment:
+    needs: [Checkout-files]
+    uses: ./.github/workflows/build-environment.yaml
+    with:
+      sourcePath: 'src'
+      buildConfig: 'Release'
+      majorVersion: '1'
+      minorVersion: '0'
+      patchVersion: ${{ github.run_number }}
+    secrets: inherit
+
+  Deploy-to-development:
+    needs: [ Build-environment, Checkout-files ]
+    uses: ./.github/workflows/deploy-environment.yaml
+    with:
+      environmentAcronym: 'dev'
+      environmentName: 'Development'
+      environment: 'Development'
+      regionAcronym: 'weu'
+      region: 'westeurope'
+      versionNumber: ${{ format('1.0.{0}', github.run_number) }}
+    secrets: inherit

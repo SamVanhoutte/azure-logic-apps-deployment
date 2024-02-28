@@ -1,0 +1,93 @@
+name: Build the backend
+
+on:
+  workflow_call:
+    inputs: 
+      sourcePath:
+        required: true
+        type: string
+        default: 'src'
+      buildConfig:
+        required: true
+        type: string
+      dotnetVersion:
+        required: false
+        type: string
+        default: '8.0.x'
+      majorVersion:
+        required: true
+        type: string
+      minorVersion:
+        required: true
+        type: string
+      patchVersion:
+        required: true
+        type: string
+      createArtifacts:
+        required: false
+        type: boolean
+        default: true
+env:
+  minorVersion: ${{ inputs.minorVersion }}
+  versionSuffix: ''
+
+jobs:
+  build-apis:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ inputs.dotnetVersion }}
+    - name: Bump the package version
+      run: |
+          dotnet tool install -g dnt --version 1.8.2
+          dnt bump-versions major ${{ inputs.majorVersion }}
+          dnt bump-versions minor ${{ env.minorVersion }}
+          dnt bump-versions patch ${{ inputs.patchVersion }}
+
+  build-functions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ inputs.dotnetVersion }}
+
+  create-pipeline-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Upload bicep files as pipeline artifact  
+        uses: actions/upload-artifact@v3
+        with:
+          name: bicep
+          path: deployment/bicep
+      - name: Upload powershell scripts as pipeline artifact  
+        uses: actions/upload-artifact@v3
+        with:
+          name: powershell
+          path: deployment/powershell
+      - name: Upload integrations as pipeline artifact  
+        uses: actions/upload-artifact@v3
+        with:
+          name: integrations
+          path: integrations
+
+  create-github-release:
+    runs-on: ubuntu-latest
+    needs: [build-apis, create-pipeline-artifacts, build-functions]
+    steps:
+      - name: Create Github release
+        if: ${{ inputs.createArtifacts }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{ inputs.majorVersion }}.${{ env.minorVersion }}.${{ inputs.patchVersion }}
+          release_name: Backend ${{ inputs.majorVersion }}.${{ env.minorVersion }}.${{ inputs.patchVersion }}
