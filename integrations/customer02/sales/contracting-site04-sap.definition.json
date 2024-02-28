@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "triggers": {
+      "Recurrence": {
+        "recurrence": {
+          "frequency": "Day",
+          "interval": 2,
+          "startTime": "2024-02-05T20:00:00Z"
+        },
+        "evaluatedRecurrence": {
+          "frequency": "Day",
+          "interval": 2,
+          "startTime": "2024-02-05T20:00:00Z"
+        },
+        "type": "Recurrence"
+      }
+    },
+    "actions": {
+      "Initialize_variable": {
+        "runAfter": {},
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "MessageData",
+              "type": "string",
+              "value": "{\"Test\": \"Value2\"}"
+            }
+          ]
+        }
+      }
+    },
+    "outputs": {}
+  }
+  
