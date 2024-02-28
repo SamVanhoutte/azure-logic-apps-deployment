@@ -37,16 +37,6 @@ jobs:
       with:
         name: bicep
         path: ./artifacts/bicep
-    - name: Download github actions from pipeline artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: github-actions
-        path: ./artifacts/github-actions
-    - name: Download api files from pipeline artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: api
-        path: ./artifacts/api
     - name: Disable bicep version_check
       shell: pwsh
       run: |
@@ -61,7 +51,7 @@ jobs:
         template: './artifacts/bicep/backend.bicep'
         parameters: ./artifacts/bicep/conf/${{ inputs.environmentAcronym }}.backend.json environmentAcronym=${{ inputs.environmentAcronym }} locationAcronym=${{ inputs.regionAcronym }} versionNumber=${{ inputs.versionNumber }} 
         failOnStdErr: true
-        
+
   Deploy-Integrations:
     runs-on: ubuntu-latest
     if: always()
