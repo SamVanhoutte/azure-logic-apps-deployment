@@ -6,9 +6,9 @@ param location string = deployment().location
 param locationAcronym string
 @allowed(['dev', 'tst', 'prd'])
 param environmentAcronym string
-var companyName = 'savanh'
 
 // resource groups are create by the foundation resource deployment template to ensure that all resource groups are available for further deployment steps
-resource backendResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
-  name: '${locationAcronym}-${environmentAcronym}-rg-backend'
+resource dataResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: '${locationAcronym}-${environmentAcronym}-logapp-rg-backend'
+  location: location
 }

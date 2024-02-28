@@ -23,7 +23,14 @@ Function Deploy-LogicAppDefinition($logicAppDefinitionFile, $location, $environm
     # Taking the directory name to which the json file belongs
     $logicAppType = Split-Path (Split-Path $logicAppDefinitionFile -Parent) -Leaf
     # and construct the resource group name
-    $resourceGroupName = "$environmentAcronym-$locationAcronym-rg-int-$logicAppType"
+    $resourceGroupName = "$environmentAcronym-$locationAcronym-logapp-rg-int-$logicAppType"
+
+    $existingRG = Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue
+    if(-Not $existingRG)
+    {
+        Write-Host "Creating resource group $resourceGroupName"   
+        New-AzResourceGroup -Name $resourceGroupName -Location 'West Europe' -Force
+    }
 
     ### CRUD OF LOGIC APP DEFINITION
     # Check if logic app exists
