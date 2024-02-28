@@ -39,5 +39,4 @@ jobs:
       environment: 'Development'
       regionAcronym: 'weu'
       region: 'westeurope'
-      versionNumber: ${{ format('1.0.{0}', github.run_number) }}
     secrets: inherit
