@@ -78,7 +78,11 @@ jobs:
         with:
           name: integrations
           path: integrations
-
+      - name: Upload api specs as pipeline artifact  
+        uses: actions/upload-artifact@v3
+        with:
+          name: api
+          path: deployment/api
   create-github-release:
     runs-on: ubuntu-latest
     needs: [build-apis, create-pipeline-artifacts, build-functions]
