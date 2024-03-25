@@ -94,23 +94,23 @@ module backendApi 'modules/api-management-api.bicep' = {
   }
 }
 
-module publicApi 'modules/api-management-api.bicep' = {
-  name: 'publicApi'
-  scope: backendResourceGroup
-  params: {
-    locationAcronym: locationAcronym
-    environmentAcronym: environmentAcronym
-    apiManagementName: apiManagementName
-    apiSpec: string(loadJsonContent('../api/backend-public-openapi.json'))
-    format: 'openapi+json'
-    path: 'public/api/v1'
-    // The following should typically be taken from output of the actual bicep module for App Service
-    // But this sample is focusing on the API Management side of things
-    serviceUrl: 'https://weu-dev-samvhintx-app-backend-api.azurewebsites.net/'
-    displayName: 'SVH IntX Public API (${environmentAcronym})'
-    description: 'The API that provides all required functionality on the ${environmentAcronym} environment.'
-    name: '${environmentAcronym}-api-public'
-    policy: format(backend_api_policy, appServiceClientId)
-    namedValues: [ ]
-  }
-}
+// module publicApi 'modules/api-management-api.bicep' = {
+//   name: 'publicApi'
+//   scope: backendResourceGroup
+//   params: {
+//     locationAcronym: locationAcronym
+//     environmentAcronym: environmentAcronym
+//     apiManagementName: apiManagementName
+//     apiSpec: string(loadJsonContent('../api/backend-public-openapi.json'))
+//     format: 'openapi+json'
+//     path: 'public/api/v1'
+//     // The following should typically be taken from output of the actual bicep module for App Service
+//     // But this sample is focusing on the API Management side of things
+//     serviceUrl: 'https://weu-dev-samvhintx-app-backend-api.azurewebsites.net/'
+//     displayName: 'SVH IntX Public API (${environmentAcronym})'
+//     description: 'The API that provides all required functionality on the ${environmentAcronym} environment.'
+//     name: '${environmentAcronym}-api-public'
+//     policy: format(backend_api_policy, appServiceClientId)
+//     namedValues: [ ]
+//   }
+// }
