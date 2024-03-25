@@ -2,11 +2,17 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+      "companyName": {
+        "value": "samvhintx"
+      },
       "locationAcronym": {
         "value": "weu"
       },
       "environmentAcronym": {
         "value": "dev"
+      },
+      "appServiceClientId": {
+        "value": "d26488c7-a0d0-4799-8665-66b810614697"
       }
     }
   }
