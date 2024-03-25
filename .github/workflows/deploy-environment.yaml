@@ -34,6 +34,11 @@ jobs:
       with:
         name: bicep
         path: ./artifacts/bicep
+    - name: Download API Definitions
+      uses: actions/download-artifact@v3
+      with:
+        name: api
+        path: ./artifacts/api
     - name: Disable bicep version_check
       shell: pwsh
       run: |

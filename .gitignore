@@ -6,7 +6,7 @@
 .idea/**
 .idea
 .DS_Store
-.DS_Store/** */
+.DS_Store/**
 # User-specific files
 *.rsuser
 *.suo
@@ -400,3 +400,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+src/.DS_Store
+src/Events.WebAPI/.DS_Store
